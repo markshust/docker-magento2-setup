@@ -1,26 +1,12 @@
 #!/bin/sh
-echo "Initializing setup..."
-
-/usr/local/bin/composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=2.0.0 /src
-
-chmod +x /src/bin/magento
-
-if [ "$M2SETUP_USE_SAMPLE_DATA" = true ]; then
-  echo "Installing composer dependencies..."
-  /src/bin/magento sampledata:deploy
-
-  echo "Ignore the above error (bug in Magento), fixing with 'composer update'..."
-  composer update
-
-  M2SETUP_USE_SAMPLE_DATA_STRING="--use-sample-data"
-else
-  M2SETUP_USE_SAMPLE_DATA_STRING=""
-fi
-
 if [ -f /src/app/etc/config.php ] || [ -f /src/app/etc/env.php ]; then
-  echo "Already installed? Either app/etc/config.php or app/etc/env.php exist, please remove both files to continue setup."
+  echo "It appears Magento is already installed (app/etc/config.php or app/etc/env.php exist). Quitting setup..."
   exit
 fi
+
+echo "Downloading and untarring archive..."
+curl -L https://storage.googleapis.com/mageinferno-docker-magento2-setup/magento-ce-2.0.0.tar.gz | tar xzf - -o -C /src
+chmod +x /src/bin/magento
 
 echo "Running Magento 2 setup script..."
 /src/bin/magento setup:install \
@@ -33,8 +19,7 @@ echo "Running Magento 2 setup script..."
   --admin-lastname=$M2SETUP_ADMIN_LASTNAME \
   --admin-email=$M2SETUP_ADMIN_EMAIL \
   --admin-user=$M2SETUP_ADMIN_USER \
-  --admin-password=$M2SETUP_ADMIN_PASSWORD \
-  $M2SETUP_USE_SAMPLE_DATA_STRING
+  --admin-password=$M2SETUP_ADMIN_PASSWORD
 
 echo "Reindexing all indexes..."
 /src/bin/magento indexer:reindex
