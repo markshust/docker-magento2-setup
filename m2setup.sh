@@ -5,7 +5,7 @@ if [ -f /src/app/etc/config.php ] || [ -f /src/app/etc/env.php ]; then
 fi
 
 echo "Downloading and untarring archive..."
-curl -L https://storage.googleapis.com/mageinferno-docker-magento2-setup/magento-ce-2.0.0.tar.gz | tar xzf - -o -C /src
+curl -L https://storage.googleapis.com/mageinferno-docker-magento2-setup/magento-ce-2.0.0-sd.tar.gz | tar xzf - -o -C /src
 chmod +x /src/bin/magento
 
 echo "Running Magento 2 setup script..."
@@ -19,7 +19,8 @@ echo "Running Magento 2 setup script..."
   --admin-lastname=$M2SETUP_ADMIN_LASTNAME \
   --admin-email=$M2SETUP_ADMIN_EMAIL \
   --admin-user=$M2SETUP_ADMIN_USER \
-  --admin-password=$M2SETUP_ADMIN_PASSWORD
+  --admin-password=$M2SETUP_ADMIN_PASSWORD \
+  --use-sample-data
 
 echo "Reindexing all indexes..."
 /src/bin/magento indexer:reindex
